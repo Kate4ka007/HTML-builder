@@ -9,16 +9,14 @@ const copyToNewFolder = async (oldFold, newFold, err) => {
   await fs.rm(newFold, { force: true, recursive: true });
   await fs.mkdir(newFold);
   const files = await fs.readdir(oldFold, { withFileTypes: true });  
-  files.forEach(file => {
+  for (const file of files) {
     const oldPath = path.join(oldFold, file.name);
-    const newPath = path.join(newFold, file.name);
-    
+    const newPath = path.join(newFold, file.name);    
     if (file.isFile()) {
       fs.copyFile(oldPath, newPath);        
     } else {
       copyToNewFolder(oldPath, newPath);
     }
-  });
-  console.log('files copied');
+  }
 };
 copyToNewFolder(folder, newFolder);

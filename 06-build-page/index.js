@@ -5,31 +5,20 @@ const temPath = path.join(__dirname, 'template.html');
 const copmPath = path.join(__dirname, 'components');
 const projectPath = path.join(__dirname, 'project-dist');
 
-const createFolder = async (bundleDir) => {
-  await fs.rm(bundleDir, { force: true, recursive: true, });
-  fs.mkdir(bundleDir);
-  copyToNewFolder(path.join(__dirname, 'assets'),
-    path.join(bundleDir, 'assets'));
-  mergeStyles(bundleDir, path.join(__dirname, 'styles'));
-  buildHtml(bundleDir,
-    temPath,
-    copmPath);
-};
-
 const copyToNewFolder = async (oldFold, newFold, err) => {
-  if (err)  throw err;
+  if (err) throw err;
   await fs.rm(newFold, { force: true, recursive: true, });
   await fs.mkdir(newFold);
   const files = await fs.readdir(oldFold, { withFileTypes: true });
-  files.forEach(file => {
+  for (const file of files) {
     let oldPath = path.join(oldFold, file.name);
     let newPath = path.join(newFold, file.name);
     if (file.isFile()) {
-      fs.copyFile(oldPath, newPath);      
+      fs.copyFile(oldPath, newPath);
     } else {
       copyToNewFolder(oldPath, newPath);
     }
-  });   
+  }
 };
 
 const mergeStyles = async (src, dist) => {
@@ -45,9 +34,9 @@ const mergeStyles = async (src, dist) => {
   }
 };
 
-const buildHtml = async (src, template, mod) => {
-  const newMod = {};
+const createIndHTML = async (src, template, mod) => {
   const modules = await fs.readdir(mod);
+  const newMod = {};  
   for (const module of modules) {
     const modName = module.substring(0, module.lastIndexOf('.'));
     const modPath = path.join(mod, module);
@@ -62,5 +51,16 @@ const buildHtml = async (src, template, mod) => {
   }
   const indexPath = path.join(src, 'index.html');
   fs.writeFile(indexPath, stingFromTemp);
+};
+
+const createFolder = async (bundleDir) => {
+  await fs.rm(bundleDir, { force: true, recursive: true, });
+  fs.mkdir(bundleDir);
+  copyToNewFolder(path.join(__dirname, 'assets'),
+    path.join(bundleDir, 'assets'));
+  mergeStyles(bundleDir, path.join(__dirname, 'styles'));
+  createIndHTML(bundleDir,
+    temPath,
+    copmPath);
 };
 createFolder(projectPath);
