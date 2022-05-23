@@ -11,9 +11,8 @@ const mergeStyles = async (src, dist) => {
   for (const file of files) {
     if (file.isFile() && path.extname(file.name) === '.css') {
       const filePath = path.join(src, file.name);
-      const data = await fs.readFile(filePath, 'utf8');
-      console.log(data);
-      await fs.appendFile(bundle, data + '\n');
+      const data = await fs.readFile(filePath, 'utf8');      
+      await fs.appendFile(bundle, `${data}\n`);
     }
   }
   console.log('marge finished');
